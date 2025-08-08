@@ -139,4 +139,52 @@ class TweetTest {
         assertEquals(r1.hashCode(), r2.hashCode(), "ReTweets con mismo tweet de origen y usuario deben tener el mismo hashCode");
         assertNotEquals(r1, r3, "ReTweets con distinto tweet de origen deben ser distintos");
     }
+
+    @Test
+    @DisplayName("Tweet lanza excepción si el id es nulo")
+    void constructor_lanzaExcepcionSiIdNulo() {
+        User user = new User("usuario1", "mail@mail.com");
+        var ex = assertThrows(RuntimeException.class, () -> new Tweet(null, "texto", user));
+        assertEquals("El id no puede ser nulo o vacío", ex.getMessage());
+    }
+
+    @Test
+    @DisplayName("Tweet lanza excepción si el id es vacío")
+    void constructor_lanzaExcepcionSiIdVacio() {
+        User user = new User("usuario1", "mail@mail.com");
+        var ex = assertThrows(RuntimeException.class, () -> new Tweet("", "texto", user));
+        assertEquals("El id no puede ser nulo o vacío", ex.getMessage());
+    }
+
+    @Test
+    @DisplayName("Tweet lanza excepción si el texto es nulo usando constructor con id")
+    void constructorConId_lanzaExcepcionSiTextoNulo() {
+        User user = new User("usuario1", "mail@mail.com");
+        var ex = assertThrows(RuntimeException.class, () -> new Tweet("id-1", null, user));
+        assertEquals(Tweet.ERROR_TWEET_TEXT_LENGTH, ex.getMessage());
+    }
+
+    @Test
+    @DisplayName("Tweet lanza excepción si el texto es vacío usando constructor con id")
+    void constructorConId_lanzaExcepcionSiTextoVacio() {
+        User user = new User("usuario1", "mail@mail.com");
+        var ex = assertThrows(RuntimeException.class, () -> new Tweet("id-1", "", user));
+        assertEquals(Tweet.ERROR_TWEET_TEXT_LENGTH, ex.getMessage());
+    }
+
+    @Test
+    @DisplayName("Tweet lanza excepción si el texto es muy largo usando constructor con id")
+    void constructorConId_lanzaExcepcionSiTextoMuyLargo() {
+        User user = new User("usuario1", "mail@mail.com");
+        String textoLargo = "a".repeat(281);
+        var ex = assertThrows(RuntimeException.class, () -> new Tweet("id-1", textoLargo, user));
+        assertEquals(Tweet.ERROR_TWEET_TEXT_LENGTH, ex.getMessage());
+    }
+
+    @Test
+    @DisplayName("Tweet lanza excepción si el usuario es nulo usando constructor con id")
+    void constructorConId_lanzaExcepcionSiUsuarioNulo() {
+        var ex = assertThrows(RuntimeException.class, () -> new Tweet("id-1", "texto", null));
+        assertEquals(Tweet.ERROR_USER_CREATOR_NULL, ex.getMessage());
+    }
 }
