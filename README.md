@@ -81,6 +81,14 @@ La home page debe tener la siguiente estructura:
 
 ---
 
+## Modelo de Objetos
+
+> El siguiente diagrama representa el modelado de objetos principal del sistema (User, Tweet, ReTweet). Puedes abrir el archivo fuente en draw.io/diagrams.net para editarlo o visualizarlo.
+
+![Modelo de Objetos](docs/modelo-objetos.png)
+
+---
+
 > Trabajo Práctico General - Mini Twitter  
 > Universidad Nacional de Río Negro - Lic. en Sistemas  
 > Autor: Agustín Fernández Gómez
