@@ -83,9 +83,9 @@ La home page debe tener la siguiente estructura:
 
 ## Modelo de Objetos
 
-> El siguiente diagrama representa el modelado de objetos principal del sistema (User, Tweet, ReTweet). Puedes abrir el archivo fuente en draw.io/diagrams.net para editarlo o visualizarlo.
+> El siguiente diagrama representa el modelado de objetos principal del sistema (User, Tweet, ReTweet). Puedes abrir el archivo HTML en tu navegador para visualizarlo o editarlo en diagrams.net/draw.io.
 
-![Modelo de Objetos](docs/modelo-objetos.png)
+[Ver modelo de objetos (HTML)](modeloDeObjetos.html)
 
 ---
 
