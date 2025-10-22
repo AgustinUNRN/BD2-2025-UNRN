@@ -6,6 +6,8 @@ import org.hibernate.tool.schema.Action;
 import jakarta.persistence.EntityManagerFactory;
 
 public class Main {
+    //iniciar el servidor de la bd derby con:
+    //java -jar derbyrun.jar server start
     public static final String IN_MEMORY_DB_URL = "jdbc:derby:memory:ejemplo;create=true";
     public static final String CLIENT_DB_URL = "jdbc:derby://localhost:1527/ejemplo;create=true";
     private static final String DB_USER = "app";
