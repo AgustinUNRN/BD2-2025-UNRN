@@ -11,14 +11,28 @@ package unrn.model;
 --mostrar su username LISTO
 */
 
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
 
+@Entity
+@Setter(AccessLevel.PRIVATE)
+@Getter(AccessLevel.PRIVATE)
+@Table(name = "USERS")
 public class User {
+    @Id
     private String username;
     private String email;
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @JoinColumn(name = "user_username")
     private List<Tweet> tweets;
+    @OneToMany(mappedBy = "userRetweeted", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReTweet> retweets;
 
     static final String ERROR_USERNAME_EMPTY = "El nombre no puede estar vacío";
@@ -27,6 +41,8 @@ public class User {
     static final String ERROR_EMAIL_EMPTY = "El correo electrónico no puede estar vacío";
     static final String ERROR_TWEET_DUPLICATE = "El tweet ya existe";
     static final String ERROR_RETWEET_DUPLICATE = "El retweet ya existe";
+
+    public User() {}
 
     public User (String username, String email) {
         if (username == null || username.isEmpty()) {

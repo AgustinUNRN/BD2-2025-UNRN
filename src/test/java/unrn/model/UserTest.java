@@ -224,7 +224,7 @@ class UserTest {
     @DisplayName("No se agrega dos veces un tweet con el mismo id a la lista de tweets del usuario")
     void createTweet_noAgregaTweetConMismoIdDuplicado() {
         User user = new User("usuario1", "mail@mail.com");
-        String id = "id-1";
+        int id = 1;
         Tweet tweet1 = new Tweet(id, "texto", user);
         Tweet tweet2 = new Tweet(id, "otro texto", user);
         user.getTweets().add(tweet1);
@@ -240,8 +240,8 @@ class UserTest {
     void createRetweet_noAgregaMismoRetweetDuplicado() {
         User user1 = new User("usuario1", "mail@mail.com");
         User user2 = new User("usuario2", "mail2@mail.com");
-        Tweet tweet1 = new Tweet("id-1", "texto", user1);
-        Tweet tweet2 = new Tweet("id-1", "otro texto", user1);
+        Tweet tweet1 = new Tweet(1, "texto", user1);
+        Tweet tweet2 = new Tweet(1, "otro texto", user1);
         ReTweet retweet1 = new ReTweet(user2, tweet1);
         ReTweet retweet2 = new ReTweet(user2, tweet2);
         user2.getRetweets().add(retweet1);
@@ -256,7 +256,7 @@ class UserTest {
     @DisplayName("createTweet lanza excepción si se intenta agregar un tweet duplicado (mismo id)")
     void createTweet_lanzaExcepcionSiTweetDuplicado() {
         User user = new User("usuario1", "mail@mail.com");
-        String id = "id-1";
+        int id = 1;
         Tweet tweet1 = new Tweet(id, "texto", user);
         Tweet tweet2 = new Tweet(id, "otro texto", user);
         user.getTweets().add(tweet1);
@@ -275,8 +275,8 @@ class UserTest {
     void createRetweet_lanzaExcepcionSiRetweetDuplicado() {
         User user1 = new User("usuario1", "mail@mail.com");
         User user2 = new User("usuario2", "mail2@mail.com");
-        Tweet tweet1 = new Tweet("id-1", "texto", user1);
-        Tweet tweet2 = new Tweet("id-1", "otro texto", user1);
+        Tweet tweet1 = new Tweet(1, "texto", user1);
+        Tweet tweet2 = new Tweet(1, "otro texto", user1);
         ReTweet retweet1 = new ReTweet(user2, tweet1);
         ReTweet retweet2 = new ReTweet(user2, tweet2);
         user2.getRetweets().add(retweet1);

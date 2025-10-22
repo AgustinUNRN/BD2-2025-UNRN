@@ -5,20 +5,38 @@ package unrn.model;
 --no se puede crear si el que retweetea es el mismo que lo creo
 --Si es re-tweet se debe mostrar la fecha de cuando se retuiteó, el nombre del usuario que re-twitteo. Además de los datos originales del tweet
 */
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Date;
 
+@Entity
+@Setter(AccessLevel.PRIVATE)
+@Getter(AccessLevel.PRIVATE)
 public class ReTweet {
     //--Si es re-tweet se debe mostrar la fecha de cuando se retuiteó,
     // el nombre del usuario que re-twitteo.
     // Además de los datos originales del tweet
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
     private Date dateRetweeted;
+    @ManyToOne
     private User userRetweeted;
+    @ManyToOne
     private Tweet originalTweet;
 
     static final String ERROR_USER_RETWEET_SELF = "El usuario no puede retuitear su propio tweet";
     static final String ERROR_USER_RETWEET_NULL = "El usuario que retuitea no puede ser nulo";
     static final String ERROR_ORIGINAL_TWEET_NULL = "El tweet original no puede ser";
 
+    public ReTweet() {} // Constructor por defecto para JPA
     //--no se puede crear si el que retweetea es el mismo que lo creo
     public ReTweet(User user, Tweet originalTweet) {
         if (originalTweet == null) {

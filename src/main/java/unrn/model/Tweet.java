@@ -7,13 +7,23 @@ package unrn.model;
 Para cargar el userid del creador del tweet (dado que no hay que implementar autenticación)
 Para cargar el texto del tweet
 Botón para crear el tweet.*/
-import java.util.Date;
-import java.util.UUID;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.Date;
+
+@Entity
+@Setter(AccessLevel.PRIVATE)
+@Getter(AccessLevel.PRIVATE)
 public class Tweet {
     //--Cada tweet debe mostrar el nombre del usuario, el texto del tweet y la fecha de creación.
-    private String id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
     private String text;
+    @ManyToOne(cascade={CascadeType.PERSIST, CascadeType.REMOVE})
     private User userCreator; //--No existen tweets no referenciados por un usuario.
     private Date dateCreated;
 //    private List<User> favorite; // hace falta?
@@ -24,10 +34,9 @@ public class Tweet {
     static final String ERROR_USER_RETWEET_SELF = "El usuario no puede retuitear su propio tweet";
     static final String ERROR_USER_RETWEETED_NULL = "El usuario que retuitea no puede ser nulo";
 
-    public Tweet(String id, String text, User userCreator) {
-        if (id == null || id.isEmpty()) {
-            throw new RuntimeException("El id no puede ser nulo o vacío");
-        }
+    public Tweet() {}
+
+    public Tweet(int id, String text, User userCreator) {
         if (text == null || text.length() < 1 || text.length() > 280) {
             throw new RuntimeException(ERROR_TWEET_TEXT_LENGTH);
         }
@@ -47,15 +56,15 @@ public class Tweet {
         if (userCreator == null) {
             throw new RuntimeException(ERROR_USER_CREATOR_NULL);
         }
-        this.id = UUID.randomUUID().toString();
         this.text = text;
         this.userCreator = userCreator;
         this.dateCreated = new Date();
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
+
     public String getText() {
         return text;
     }
@@ -87,12 +96,12 @@ public class Tweet {
         if (this == obj) return true;
         if (!(obj instanceof Tweet)) return false;
         Tweet other = (Tweet) obj;
-        return id.equals(other.id);
+        return id == other.id;
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return Integer.hashCode(id);
     }
 
 }
