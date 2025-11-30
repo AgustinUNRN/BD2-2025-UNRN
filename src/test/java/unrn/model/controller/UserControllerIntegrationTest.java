@@ -49,11 +49,11 @@ public class UserControllerIntegrationTest {
 
     @Test
     void getUser_found() throws Exception {
-        saveUser("bob", "bob@example.com");
+        saveUser("bobby", "bob@example.com");
 
-        mvc.perform(get("/api/users/{username}", "bob"))
+        mvc.perform(get("/api/users/{username}", "bobby"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userName").value("bob"))
+                .andExpect(jsonPath("$.userName").value("bobby"))
                 .andExpect(jsonPath("$.email").value("bob@example.com"));
     }
 
@@ -79,8 +79,8 @@ public class UserControllerIntegrationTest {
 
     @Test
     void createUser_conflict() throws Exception {
-        saveUser("dave", "dave@example.com");
-        UserDto dto = new UserDto("dave", "dave@example.com", null, null);
+        saveUser("dave1", "dave@example.com");
+        UserDto dto = new UserDto("dave1", "dave@example.com", null, null);
         String body = objectMapper.writeValueAsString(dto);
 
         mvc.perform(post("/api/users")
@@ -91,12 +91,12 @@ public class UserControllerIntegrationTest {
 
     @Test
     void deleteUser_success() throws Exception {
-        saveUser("erin", "erin@example.com");
+        saveUser("erin1", "erin@example.com");
 
-        mvc.perform(delete("/api/users/{username}", "erin"))
+        mvc.perform(delete("/api/users/{username}", "erin1"))
                 .andExpect(status().isNoContent());
 
-        assertThat(userRepository.findByUsername("erin")).isEmpty();
+        assertThat(userRepository.findByUsername("erin1")).isEmpty();
     }
 
     @Test

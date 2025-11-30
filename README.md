@@ -39,45 +39,101 @@ Vamos a construir una versión muy simplificada de Twitter con una arquitectura 
 
 ---
 
-## Front-end
+## Cómo ejecutar (local)
 
-La home page debe tener la siguiente estructura:
+El proyecto usa Apache Derby como base de datos en modo servidor/cliente por defecto. A continuación las instrucciones mínimas para levantar la DB y la aplicación.
 
-- **Header Menú**:
-  - Nombre del sistema
-  - Link a la home page
-  - Link para crear un nuevo tweet
+1) Descargar Apache Derby (si no lo tienes):
+   - Descarga binario desde: https://db.apache.org/derby/derby_downloads.html
+   - Descomprime, por ejemplo en: `~/Descargas/db-derby-10.17.1.0-bin`
 
-- **Panel principal**:
-  - Se muestran los tweets (no incluir ReTweets) de cualquier usuario, paginados de a 10 por página.
-  - Navegación de paginación (adelante/atrás, botones deshabilitados si no hay más).
+2) Iniciar el servidor de red de Derby (puerto 1527 por defecto):
 
-- **Panel izquierdo**:
-  - Lista de usuarios del sistema (solo userNames).
-  - Al clickear en un usuario, se muestran sus últimos 15 tweets en el panel principal.
-  - Si es re-tweet, mostrar la fecha de retweet, el nombre del usuario que retwitteó y los datos originales del tweet.
-  - Botón "Mostrar más" para ver los siguientes 15 tweets, hasta que no haya más (cambia a "No hay más..." si se termina).
+Si descargaste y descomprimiste en `~/Descargas/db-derby-10.17.1.0-bin`, arrancalo con:
 
-- **Crear nuevo tweet**:
-  - Formulario con:
-    - Input para el userid del creador
-    - Input para el texto del tweet
-    - Botón para crear
-  - Indicar éxito o falla en la creación.
+```bash
+# desde la carpeta descomprimida (o indicando la ruta completa al derbyrun.jar)
+java -jar ~/Descargas/db-derby-10.17.1.0-bin/derbyrun.jar server start
+```
+
+Deberías ver un mensaje indicando que Derby arrancó y está escuchando en el puerto 1527. Verificá con:
+
+```bash
+ss -ltnp | grep 1527
+```
+
+3) Credenciales y URL de conexión usadas por la aplicación:
+
+- JDBC URL (cliente): `jdbc:derby://localhost:1527/ejemplo;create=true`
+- Usuario: `app`
+- Password: `app`
+
+4) Clase `Main` para poblar la BD y ejecutar ejemplos
+
+- La clase recomendada para poblar la BD con datos de ejemplo es `unrn.model.Main`. Ejecutala una vez con Derby corriendo para insertar usuarios, tweets y retweets de ejemplo.
+
+5) Ejecutar la aplicación (opciones):
+
+- Opción A — Ejecutar desde IntelliJ/Eclipse: crear una configuración de "Application" apuntando a la clase `unrn.model.Main` (o `unrn.model.Application` / `unrn.model.ClassicEmf` si preferís) y correrla. `Main` crea datos de ejemplo.
+
+- Opción B — Ejecutar con Maven (invoca la clase `Main`):
+
+```bash
+mvn org.codehaus.mojo:exec-maven-plugin:3.1.0:java -Dexec.mainClass="unrn.model.Main"
+```
+
+- Opción C — Ejecutar el backend Spring Boot (levanta contexto web y APIs):
+
+```bash
+mvn org.springframework.boot:spring-boot-maven-plugin:3.2.4:run
+```
+
+> Nota importante: si ejecutás `spring-boot:run` el servidor Derby debe estar activo (paso 2). Si no, Hibernate intentará conectarse y fallará con "Connection refused".
 
 ---
 
 ## Tecnologías usadas
 
-- <img src="https://img.shields.io/badge/Java-17%2B-blue?logo=java" alt="Java" height="20"/> Java 17+
-- <img src="https://img.shields.io/badge/JUnit-5-green?logo=junit5" alt="JUnit 5" height="20"/> JUnit 5 para tests unitarios e integración
-- <img src="https://img.shields.io/badge/Maven-Build%20Tool-blue?logo=apachemaven" alt="Maven" height="20"/> Maven para gestión de dependencias y build
-- <img src="https://img.shields.io/badge/H2-Database-lightgrey?logo=h2" alt="H2 Database" height="20"/> H2 Database (o similar) para tests de integración con base de datos en memoria
-- <img src="https://img.shields.io/badge/Hibernate-Persistencia-59666C?logo=hibernate" alt="Hibernate" height="20"/> Hibernate para persistencia de datos
-- <img src="https://img.shields.io/badge/Spring%20Boot-Web%20Backend-6DB33F?logo=springboot" alt="Spring Boot" height="20"/> Spring Boot para servicios web REST
-- <img src="https://img.shields.io/badge/REST-API-orange?logo=rest" alt="REST API" height="20"/> REST API para comunicación entre front-end y back-end
-- <img src="https://img.shields.io/badge/React-Front--end-61DAFB?logo=react" alt="React" height="20"/> React para el front-end
-- <img src="https://img.shields.io/badge/HTML%2FCSS%2FJS-Frontend-yellow?logo=html5" alt="HTML/CSS/JavaScript" height="20"/> HTML/CSS/JavaScript para el front-end
+- Java 17 (compatibilidad con OpenJDK 17)
+- Maven para build y gestión de dependencias
+- Apache Derby (modo servidor/cliente) como base de datos para desarrollo local
+- Hibernate (Jakarta Persistence) para ORM / mapeo JPA
+- Spring Boot (Web, Data JPA) para exponer API REST y wiring
+- JUnit 5 + Mockito/Hamcrest para tests unitarios e integración
+- React (Vite) para front-end (aplicación cliente separada)
+
+---
+
+## CORS / Conexión desde front-end
+
+El front (por ejemplo corriendo en `http://localhost:5173`) consume las rutas REST expuestas por este backend en `http://localhost:8080/api/...`.
+Si el front hace peticiones cross-origin, habilitá CORS en la app (ya hay una configuración en `unrn.model.config.CorsConfig`).
+
+---
+
+
+## Datos de ejemplo
+
+La clase `unrn.model.Main` añade algunos usuarios y tweets (temática nórdica) y crea retweets de ejemplo. Ejecutala una vez con Derby corriendo para poblar la base.
+
+---
+
+## Tests
+
+- Para compilar y ejecutar tests:
+
+```bash
+mvn -U clean test
+```
+
+- Para ejecutar sólo la suite de integración (si están separados por perfiles o naming): ajustar el comando según la configuración del proyecto.
+
+---
+
+## Notas y consejos
+
+- Si ves errores de conexión con Derby (Connection refused), comprobá que el servidor de red esté iniciado y que el puerto 1527 esté accesible.
+- Para tests locales se puede configurar una BD en memoria: `jdbc:derby:memory:ejemplo;create=true`.
 
 ---
 

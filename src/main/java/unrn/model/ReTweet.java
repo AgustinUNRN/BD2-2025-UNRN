@@ -22,18 +22,19 @@ public class ReTweet {
     // el nombre del usuario que re-twitteo.
     // Además de los datos originales del tweet
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RE_TWEET_SEQ")
-    @SequenceGenerator(name = "RE_TWEET_SEQ", sequenceName = "RE_TWEET_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RETWEET_SEQ")
+    @SequenceGenerator(name = "RETWEET_SEQ", sequenceName = "RETWEET_SEQ", allocationSize = 1)
     private int id;
 
     @Column(name = "DATE_RETWEETED")
     private Date dateRetweeted;
 
-    @ManyToOne
-    @JoinColumn(name = "USER_RETWEETED_USERNAME")
-    private User userRetweeted;
     @ManyToOne(optional = false)
-    @JoinColumn(name = "ORIGINAL_TWEET_ID", referencedColumnName = "id")
+    @JoinColumn(name = "user_retweeted_username", referencedColumnName = "username")
+    private User userRetweeted;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "original_tweet_id", referencedColumnName = "id")
     private Tweet originalTweet;
 
     static final String ERROR_USER_RETWEET_SELF = "El usuario no puede retuitear su propio tweet";

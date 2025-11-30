@@ -30,7 +30,7 @@ public class TweetController {
         return tweetService.listAll();
     }
 
-    @GetMapping("/{username}")
+    @GetMapping("/user/{username}")
     public List<TweetDto> listTweetsByUser(@PathVariable String username) {
         return tweetService.listByUser(username);
     }
@@ -56,4 +56,3 @@ public class TweetController {
     }
 
 }
-
