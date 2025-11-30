@@ -4,9 +4,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceConfiguration;
 import org.hibernate.cfg.JdbcSettings;
 import org.hibernate.tool.schema.Action;
-import unrn.model.ReTweet;
-import unrn.model.User;
-import unrn.model.Tweet;
 
 public class ClassicEmf {
     public static final String CLIENT_DB_URL = "jdbc:derby://localhost:1527/ejemplo;create=true";
@@ -43,7 +40,24 @@ public class ClassicEmf {
                     "Con Mjölnir hice temblar las nubes y celebré con un gran banquete."
             });
 
-            insertIfNotExists(entityManager, "loki_", "loki@asgard.com", new String[]{}); // sin tweets
+            insertIfNotExists(entityManager, "loki__", "loki@asgard.com", new String[]{
+                    "Hoy cambié las señales de tráfico... el caos es un arte.",
+                    "Presté mi sombra a un dios vecino; ahora llega tarde a todo.",
+                    "Vendí mapas falsos a un viajero — lo enriquecí con historias.",
+                    "Una broma al viento y todo el pueblo discutió por una semana.",
+                    "Me disfracé de cuervo y robé tres risas por el camino.",
+                    "Conjuro un acertijo y la verdad toma vacaciones.",
+                    "Intercambié etiquetas: 'veneno' por 'té' — elegante caos.",
+                    "Hice una moneda bailar y decidió nunca volver a casa.",
+                    "¿Problema social? Un buen engaño y una mala memoria.",
+                    "Hoy regalé un laberinto invisible; la confusión es mi presente.",
+                    "Prometí sinceridad, luego la presté a otro por diversión.",
+                    "Cambiar el nombre de la luna es fácil; la gente no reclama.",
+                    "Hice que un espejo pidiera perdón antes de devolverlo.",
+                    "Planté una mentira y coseché curiosidad y dos sonrisas.",
+                    "Bailé en dos caminos y el mundo aplaudió a ambos.",
+                    "Si pierdo, regreso en forma de chiste — la revancha espera."
+            });
 
             transaction.commit();
         } catch (Exception e) {

@@ -2,55 +2,58 @@ package unrn.model.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import unrn.model.ReTweet;
-import unrn.model.Tweet;
-import unrn.model.User;
-import unrn.model.repo.ReTweetRepository;
-import unrn.model.repo.TweetRepository;
-import unrn.model.repo.UserRepository;
+import unrn.model.dto.ReTweetDto;
+import unrn.model.dto.TweetDto;
+import unrn.model.dto.UserDto;
+import unrn.model.service.ReTweetService;
+import unrn.model.service.TweetService;
+import unrn.model.service.UserService;
 
+import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/tweets")
 public class TweetController {
-    private final TweetRepository tweetRepository;
-    private final UserRepository userRepository;
-    private final ReTweetRepository reTweetRepository;
+    private final TweetService tweetService;
+    private final UserService userService;
+    private final ReTweetService reTweetService;
 
-    public TweetController(TweetRepository tweetRepository, UserRepository userRepository, ReTweetRepository reTweetRepository) {
-        this.tweetRepository = tweetRepository;
-        this.userRepository = userRepository;
-        this.reTweetRepository = reTweetRepository;
+    public TweetController(TweetService tweetService, UserService userService, ReTweetService reTweetService) {
+        this.tweetService = tweetService;
+        this.userService = userService;
+        this.reTweetService = reTweetService;
     }
 
     @GetMapping
-    public List<Tweet> list() {
-        return tweetRepository.findAll();
+    public List<TweetDto> list() {
+        return tweetService.listAll();
     }
 
-   /* @PostMapping
-    public ResponseEntity<Tweet> create(@RequestParam String username, @RequestParam String text) {
-        Optional<User> u = userRepository.findById(username);
-        if (u.isEmpty()) return ResponseEntity.badRequest().build();
-        Tweet tweet = new Tweet(text, u.get());
-        Tweet saved = tweetRepository.save(tweet);
-        return ResponseEntity.ok(saved);
-    }*/
+    @GetMapping("/{username}")
+    public List<TweetDto> listTweetsByUser(@PathVariable String username) {
+        return tweetService.listByUser(username);
+    }
 
-    @PostMapping("/{id}/retweet")
-    public ResponseEntity<ReTweet> retweet(@PathVariable int id, @RequestParam String username) {
-        Optional<Tweet> t = tweetRepository.findById(id);
-        Optional<User> u = userRepository.findById(username);
-        if (t.isEmpty() || u.isEmpty()) return ResponseEntity.badRequest().build();
-        Tweet original = t.get();
-        User user = u.get();
-        // check not same creator
-        if (original.isUserCreator(user)) return ResponseEntity.status(403).build();
-        ReTweet rt = new ReTweet(user, original);
-        ReTweet saved = reTweetRepository.save(rt);
+    @GetMapping("/retweets")
+    public List<ReTweetDto> listReTweets() {
+        return reTweetService.listAll();
+    }
+
+    @GetMapping("/retweets/{username}")
+    public List<ReTweetDto> listReTweetsByUser(@PathVariable String username) {
+        return reTweetService.listByUser(username);
+    }
+
+
+    @PostMapping
+    public ResponseEntity<TweetDto> create(@RequestParam String username, @RequestParam String text) {
+        UserDto u = userService.findByUserName(username);
+        if (u==null) return ResponseEntity.badRequest().build();
+        TweetDto tweetDto = new TweetDto(0,u.getUserName(),text, new Date());
+        TweetDto saved = tweetService.createTweet(tweetDto);
         return ResponseEntity.ok(saved);
     }
+
 }
 

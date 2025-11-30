@@ -8,7 +8,7 @@ import java.util.Date;
 @AllArgsConstructor
 public class TweetDto {
     private int id;
-    private String userName;
+    private String userCreatorUsername;
     private String text;
     private Date createdAt;
 }

@@ -16,10 +16,17 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
-    private TweetRepository tweetRepository;
-    private ReTweetRepository reTweetRepository;
+    private final UserRepository userRepository;
+    private final TweetRepository tweetRepository;
+    private final ReTweetRepository reTweetRepository;
+
+    public UserService(UserRepository userRepository,
+                       TweetRepository tweetRepository,
+                       ReTweetRepository reTweetRepository) {
+        this.userRepository = userRepository;
+        this.tweetRepository = tweetRepository;
+        this.reTweetRepository = reTweetRepository;
+    }
 
     public List<UserDto> listAll() {
         return userRepository.findAll()
@@ -29,23 +36,18 @@ public class UserService {
     }
 
     public UserDto findByUserName(String userName) {
-        Optional<User> userOpcional = userRepository.findByUsername(userName);
-
-        if (userOpcional.isEmpty()){
-            throw new RuntimeException("User not found");
-        }
-
-        User user = userOpcional.get();
-        return new UserDto(user.getUsername(), user.getEmail(), null, null);
+        return userRepository.findByUsername(userName)
+                .map(u -> new UserDto(u.getUsername(), u.getEmail(), null, null))
+                .orElse(null);
     }
 
     public Boolean existsByUserName(String userName) {
-        UserDto aux = findByUserName(userName);
-        return aux.getUserName().equals(userName);
+        return userRepository.findByUsername(userName).isPresent();
     }
 
     @Transactional
     public UserDto createUser(UserDto userDto) {
+
         User user = new User(userDto.getUserName(), userDto.getEmail());
         userRepository.save(user);
         return userDto;
@@ -53,9 +55,8 @@ public class UserService {
 
     @Transactional
     public void deleteUser(String userName) {
-        userRepository.deleteByUsername(userName);
-        tweetRepository.deleteAllByUserCreator_Username(userName);
         reTweetRepository.deleteAllByUserRetweeted_Username(userName);
-
+        tweetRepository.deleteAllByUserCreator_Username(userName);
+        userRepository.deleteByUsername(userName);
     }
 }

@@ -25,7 +25,9 @@ public class Tweet {
     private int id;
     private String text;
     @ManyToOne
+    @JoinColumn(name = "usercreator_username")
     private User userCreator; //--No existen tweets no referenciados por un usuario.
+    @Column(name = "DATECREATED")
     private Date dateCreated;
 //    private List<User> favorite; // hace falta?
 //    private List<User> retweet; // hace falta?

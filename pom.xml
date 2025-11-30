@@ -96,6 +96,12 @@
             <version>5.13.4</version>
             <scope>test</scope>
         </dependency>
+        <!-- Spring Boot test utilities (includes MockMvc, AssertJ, Hamcrest, Mockito, etc.) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
         <!-- H2 for fast in-memory integration tests (test scope) -->
         <dependency>
             <groupId>com.h2database</groupId>

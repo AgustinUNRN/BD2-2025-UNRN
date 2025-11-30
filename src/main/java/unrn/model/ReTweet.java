@@ -5,11 +5,7 @@ package unrn.model;
 --no se puede crear si el que retweetea es el mismo que lo creo
 --Si es re-tweet se debe mostrar la fecha de cuando se retuiteó, el nombre del usuario que re-twitteo. Además de los datos originales del tweet
 */
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +13,8 @@ import lombok.Setter;
 import java.util.Date;
 
 @Entity
+@Table(name = "RETWEET")
+@Access(AccessType.FIELD)
 @Setter(AccessLevel.PRIVATE)
 @Getter(AccessLevel.PRIVATE)
 public class ReTweet {
@@ -24,12 +22,18 @@ public class ReTweet {
     // el nombre del usuario que re-twitteo.
     // Además de los datos originales del tweet
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RE_TWEET_SEQ")
+    @SequenceGenerator(name = "RE_TWEET_SEQ", sequenceName = "RE_TWEET_SEQ", allocationSize = 1)
     private int id;
+
+    @Column(name = "DATE_RETWEETED")
     private Date dateRetweeted;
+
     @ManyToOne
+    @JoinColumn(name = "USER_RETWEETED_USERNAME")
     private User userRetweeted;
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "ORIGINAL_TWEET_ID", referencedColumnName = "id")
     private Tweet originalTweet;
 
     static final String ERROR_USER_RETWEET_SELF = "El usuario no puede retuitear su propio tweet";
@@ -65,8 +69,9 @@ public class ReTweet {
         return userRetweeted;
     }
 
-    public String getUserRetweetedUsername() {return userRetweeted.getUsername();}
-
+    public String getUserRetweetedUsername() {
+        return userRetweeted == null ? null : userRetweeted.getUsername();
+    }
     public Date getDate() {
         return dateRetweeted;
     }

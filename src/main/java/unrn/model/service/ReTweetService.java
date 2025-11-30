@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
     public List<ReTweetDto> listAll() {
         return reTweetRepository.findAll()
                 .stream()
-                .map(rt -> new ReTweetDto(rt.getId(),rt.getUserRetweeted().getUsername(),
+                .map(rt -> new ReTweetDto(rt.getId(),rt.getUserRetweetedUsername(),
                         new unrn.model.dto.TweetDto(rt.getOriginalTweet().getId(),
                                 rt.getOriginalTweet().getUserCreatorUsername(),
                                 rt.getOriginalTweet().getText(),

@@ -11,6 +11,7 @@ import unrn.model.dto.UserDto;
 import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -18,21 +19,21 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    private final UserRepository userRepository;
-
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    // Constructor injection used by Spring in tests
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping
-    public List<User> list() {
-        return userRepository.findAll();
+    public List<UserDto> list() {
+        return userService.listAll();
     }
 
     @GetMapping("/{username}")
-    public ResponseEntity<User> get(@PathVariable String username) {
-        Optional<User> u = userRepository.findById(username);
-        return u.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<UserDto> get(@PathVariable String username) {
+        UserDto dto = userService.findByUserName(username);
+        if (dto == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(dto);
     }
 
     @PostMapping
@@ -43,5 +44,14 @@ public class UserController {
         UserDto saved = userService.createUser(userDto);
         return ResponseEntity.ok(saved);
     }
-}
 
+
+    @DeleteMapping("/{username}")
+    public ResponseEntity<Void> delete(@PathVariable String username) {
+        if (!userService.existsByUserName(username)) {
+            return ResponseEntity.notFound().build();
+        }
+        userService.deleteUser(username);
+        return ResponseEntity.noContent().build();
+    }
+}

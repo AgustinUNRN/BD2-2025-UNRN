@@ -17,6 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -35,7 +36,7 @@ public class User {
     private List<ReTweet> retweets;
 
     static final String ERROR_USERNAME_EMPTY = "El nombre no puede estar vacío";
-    static final String ERROR_USERNAME_SHORT = "El nombre debe tener más de 5 caracteres";
+    static final String ERROR_USERNAME_SHORT = "El nombre debe tener al menos 1 caracter";
     static final String ERROR_USERNAME_LONG = "El nombre no puede tener más de 25 caracteres";
     static final String ERROR_EMAIL_EMPTY = "El correo electrónico no puede estar vacío";
     static final String ERROR_TWEET_DUPLICATE = "El tweet ya existe";
@@ -49,7 +50,7 @@ public class User {
         if (username == null || username.isEmpty()) {
             throw new RuntimeException(ERROR_USERNAME_EMPTY);
         }
-        if (username.length() < 5) {
+        if (username.length() < 1) {
             throw new RuntimeException(ERROR_USERNAME_SHORT);
         }
         if (username.length() > 25) {
@@ -83,7 +84,7 @@ public class User {
 
 
     public void createTweet(String text) {
-        Tweet tweet = new Tweet(text, this, new java.util.Date());
+        Tweet tweet = new Tweet(text, this, new Date());
         // Add tweet without relying on transient id-based equality to avoid false duplicates
         tweets.add(tweet);
     }

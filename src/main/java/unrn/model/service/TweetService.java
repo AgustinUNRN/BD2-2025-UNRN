@@ -43,11 +43,11 @@ public class TweetService {
 
     @Transactional
     public TweetDto createTweet(TweetDto tweetDto) {
-        String userName = tweetDto.getUserName();
+        String userName = tweetDto.getUserCreatorUsername();
         String text = tweetDto.getText();
         Date date = tweetDto.getCreatedAt();
 
-        User user = userRepository.findById(tweetDto.getUserName())
+        User user = userRepository.findById(tweetDto.getUserCreatorUsername())
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado: " + userName));
 
         Tweet tweet = new Tweet(text, user, date);
