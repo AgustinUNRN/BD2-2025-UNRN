@@ -3,6 +3,7 @@ package unrn.model;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import java.util.Date;
 
 class ReTweetTest {
 
@@ -12,7 +13,7 @@ class ReTweetTest {
         // Setup
         User creador = new User("usuario1", "mail@mail.com");
         User retweeter = new User("usuario2", "mail2@mail.com");
-        Tweet tweet = new Tweet("Hola", creador);
+        Tweet tweet = new Tweet("Hola", creador, new Date());
         // Ejercitación
         ReTweet retweet = new ReTweet(retweeter, tweet);
         // Verificación
@@ -36,7 +37,7 @@ class ReTweetTest {
     void constructor_lanzaExcepcionSiUsuarioNulo() {
         // Setup
         User creador = new User("usuario1", "mail@mail.com");
-        Tweet tweet = new Tweet("Hola", creador);
+        Tweet tweet = new Tweet("Hola", creador,new Date());
         // Ejercitación y Verificación
         var ex = assertThrows(RuntimeException.class, () -> new ReTweet(null, tweet));
         assertEquals(ReTweet.ERROR_USER_RETWEET_NULL, ex.getMessage(), "Debe lanzar excepción por usuario nulo");
@@ -47,7 +48,7 @@ class ReTweetTest {
     void constructor_lanzaExcepcionSiUsuarioEsCreador() {
         // Setup
         User creador = new User("usuario1", "mail@mail.com");
-        Tweet tweet = new Tweet("Hola", creador);
+        Tweet tweet = new Tweet("Hola", creador, new Date());
         // Ejercitación y Verificación
         var ex = assertThrows(RuntimeException.class, () -> new ReTweet(creador, tweet));
         assertEquals(ReTweet.ERROR_USER_RETWEET_SELF, ex.getMessage(), "Debe lanzar excepción por retuitear su propio tweet");

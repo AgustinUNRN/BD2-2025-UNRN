@@ -1,5 +1,6 @@
 package unrn.model;
 
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceConfiguration;
 import org.hibernate.cfg.JdbcSettings;
 import org.hibernate.tool.schema.Action;
@@ -17,7 +18,7 @@ public class ClassicEmf {
                 .managedClass(ReTweet.class)
                 .managedClass(User.class)
                 .managedClass(Tweet.class)
-                .property(PersistenceConfiguration.JDBC_DRIVER, "org.apache.derby.jdbc.ClientDriver")
+                .property(PersistenceConfiguration.JDBC_DRIVER, "org.apache.derby.client.ClientAutoloadedDriver")
                 .property(PersistenceConfiguration.JDBC_URL, CLIENT_DB_URL)
                 .property(PersistenceConfiguration.JDBC_USER, DB_USER)
                 .property(PersistenceConfiguration.JDBC_PASSWORD, DB_PWD)
@@ -32,7 +33,17 @@ public class ClassicEmf {
         try {
             transaction.begin();
 
-            // Trabaja con tus entidades aquí
+            insertIfNotExists(entityManager, "odin_", "odin@asgard.com", new String[]{
+                    "He visto el Yggdrasil vibrar bajo la luna; hoy guardo más secretos.",
+                    "Los cuervos traen historias de tierras lejanas; las escucho con cuidado.",
+                    "Un sacrificio por el saber fortalece el alma y afila la visión."
+            });
+
+            insertIfNotExists(entityManager, "thor_", "thor@asgard.com", new String[]{
+                    "Con Mjölnir hice temblar las nubes y celebré con un gran banquete."
+            });
+
+            insertIfNotExists(entityManager, "loki_", "loki@asgard.com", new String[]{}); // sin tweets
 
             transaction.commit();
         } catch (Exception e) {
@@ -41,5 +52,20 @@ public class ClassicEmf {
         } finally {
             entityManager.close();
         }
+    }
+
+    private static void insertIfNotExists(EntityManager em, String username, String email, String[] tweets) {
+        User existing = em.find(User.class, username);
+        if (existing != null) {
+            System.out.println("User '" + username + "' already exists; skipping insert.");
+            return;
+        }
+
+        var user = new User(username, email);
+        for (String t : tweets) {
+            user.createTweet(t);
+        }
+        em.persist(user);
+        System.out.println("Inserted user '" + username + "' with " + tweets.length + " tweets.");
     }
 }

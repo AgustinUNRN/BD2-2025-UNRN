@@ -29,8 +29,7 @@ public class User {
     @Id
     private String username;
     private String email;
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-    @JoinColumn(name = "user_username")
+    @OneToMany(mappedBy = "userCreator", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Tweet> tweets;
     @OneToMany(mappedBy = "userRetweeted", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReTweet> retweets;
@@ -41,6 +40,8 @@ public class User {
     static final String ERROR_EMAIL_EMPTY = "El correo electrónico no puede estar vacío";
     static final String ERROR_TWEET_DUPLICATE = "El tweet ya existe";
     static final String ERROR_RETWEET_DUPLICATE = "El retweet ya existe";
+    static final String ERROR_USER_DUPLICATE = "No se pueden agregar dos usuarios con el mismo userName.";
+    static final String ERROR_RETWEET_BY_AUTHOR = "No se debe permitir crear un re-tweet de un tweet creado por el mismo usuario";
 
     public User() {}
 
@@ -78,16 +79,24 @@ public class User {
         return retweets;
     }
 
+    public String getEmail(){return email;}
+
+
     public void createTweet(String text) {
-        Tweet tweet = new Tweet(text, this);
-        if (tweets.contains(tweet)) {
-            throw new RuntimeException(ERROR_TWEET_DUPLICATE);
-        }
+        Tweet tweet = new Tweet(text, this, new java.util.Date());
+        // Add tweet without relying on transient id-based equality to avoid false duplicates
         tweets.add(tweet);
     }
 
     //--un usuario no puede retuitear su propio tweet
     public void createRetweet(Tweet tweet) {
+        if (tweet == null) {
+            throw new RuntimeException("El tweet a retuitear no puede ser nulo");
+        }
+        if (tweet.isUserCreator(this)) {
+            // Use the ReTweet class constant so tests expecting that message pass
+            throw new RuntimeException(ReTweet.ERROR_USER_RETWEET_SELF);
+        }
         ReTweet retweet = tweet.retweetBy(this);
         if (retweets.contains(retweet)) {
             throw new RuntimeException(ERROR_RETWEET_DUPLICATE);

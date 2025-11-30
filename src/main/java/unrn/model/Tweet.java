@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 @Setter(AccessLevel.PRIVATE)
@@ -23,7 +24,7 @@ public class Tweet {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String text;
-    @ManyToOne(cascade={CascadeType.PERSIST, CascadeType.REMOVE})
+    @ManyToOne
     private User userCreator; //--No existen tweets no referenciados por un usuario.
     private Date dateCreated;
 //    private List<User> favorite; // hace falta?
@@ -36,7 +37,7 @@ public class Tweet {
 
     public Tweet() {}
 
-    public Tweet(int id, String text, User userCreator) {
+    public Tweet(int id, String text, User userCreator, Date dateCreated) {
         if (text == null || text.length() < 1 || text.length() > 280) {
             throw new RuntimeException(ERROR_TWEET_TEXT_LENGTH);
         }
@@ -46,10 +47,10 @@ public class Tweet {
         this.id = id;
         this.text = text;
         this.userCreator = userCreator;
-        this.dateCreated = new Date();
+        this.dateCreated = dateCreated;
     }
 
-    public Tweet(String text, User userCreator) {
+    public Tweet(String text, User userCreator, Date dateCreated) {
         if (text == null || text.length() < 1 || text.length() > 280) {
             throw new RuntimeException(ERROR_TWEET_TEXT_LENGTH);
         }
@@ -58,7 +59,7 @@ public class Tweet {
         }
         this.text = text;
         this.userCreator = userCreator;
-        this.dateCreated = new Date();
+        this.dateCreated = dateCreated;
     }
 
     public int getId() {
@@ -96,11 +97,18 @@ public class Tweet {
         if (this == obj) return true;
         if (!(obj instanceof Tweet)) return false;
         Tweet other = (Tweet) obj;
+        // If either tweet is transient (id == 0), compare by business key (text + userCreator)
+        if (this.id == 0 || other.id == 0) {
+            return Objects.equals(this.text, other.text) && Objects.equals(this.userCreator, other.userCreator);
+        }
         return id == other.id;
     }
 
     @Override
     public int hashCode() {
+        if (id == 0) {
+            return Objects.hash(text, userCreator);
+        }
         return Integer.hashCode(id);
     }
 

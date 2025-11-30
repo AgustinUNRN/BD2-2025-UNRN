@@ -53,6 +53,10 @@ public class ReTweet {
         this.dateRetweeted = new Date();
     }
 
+    public int getId() {
+        return id;
+    }
+
     public Tweet getOriginalTweet() {
         return originalTweet;
     }
@@ -60,6 +64,8 @@ public class ReTweet {
     public User getUserRetweeted() {
         return userRetweeted;
     }
+
+    public String getUserRetweetedUsername() {return userRetweeted.getUsername();}
 
     public Date getDate() {
         return dateRetweeted;
